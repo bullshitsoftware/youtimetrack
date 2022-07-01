@@ -1,0 +1,9 @@
+{
+    "build": {
+       "dockerfile": "./Dockerfile" 
+    },
+    "extensions": [
+        "golang.Go",
+        "eamodio.gitlens"
+    ]
+}
