@@ -1,0 +1,12 @@
+project_name: youtimetrack
+builds:
+  - id: youtimetrack
+    binary: youtimetrack
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch: 
+      - amd64
+      - arm
+      - arm64

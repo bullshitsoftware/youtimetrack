@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+    branches:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+      
+      - name: checkout
+        uses: actions/checkout@v3
+      
+      - name: test
+        run: go test -v -covermode count -coverprofile profile.out
+
+      - name: convert coverage
+        uses: jandelgado/gcov2lcov-action@v1
+        with:
+          infile:  profile.out
+          outfile: profile.lcov
+
+      - name: send coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: profile.lcov
