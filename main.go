@@ -38,11 +38,10 @@ func main() {
 	month := app.Calendar.Calc(start, end)
 	today := app.Calendar.Calc(start, now)
 	worked := app.Youtrack.Fetch(start, end)
-	fmt.Printf(
-		"%dh %dm / %dh %dm / %dh %dm (worked / today / month)\n",
-		worked/60, worked%60,
-		today/60, today%60,
-		month/60, today%60,
+	fmt.Printf("%s / %s / %s (worked / today / month)\n",
+		FormatMinutes(worked),
+		FormatMinutes(today),
+		FormatMinutes(month),
 	)
 }
 
@@ -211,4 +210,13 @@ OUTER:
 	}
 
 	return m
+}
+
+func FormatMinutes(m int) string {
+	s := fmt.Sprintf("%dh", m/60)
+	if m%60 > 0 {
+		s += fmt.Sprintf(" %dm", m%60)
+	}
+
+	return s
 }

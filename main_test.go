@@ -33,5 +33,5 @@ func Example() {
 	server.Shutdown(context.TODO())
 
 	// Output: Created /tmp/youtimetrack/config.json
-	// 1h 20m / 143h 0m / 159h 0m (worked / today / month)
+	// 1h 20m / 143h / 159h (worked / today / month)
 }
