@@ -1,9 +1,13 @@
 {
-    "build": {
-       "dockerfile": "./Dockerfile" 
-    },
-    "extensions": [
-        "golang.Go",
-        "eamodio.gitlens"
-    ]
+  "build": {
+    "dockerfile": "./Dockerfile" 
+  },
+  "extensions": [
+    "golang.Go",
+    "eamodio.gitlens",
+    "EditorConfig.EditorConfig"
+  ],
+  "settings": {
+      "editor.rulers": [120, 160]
+  }
 }
