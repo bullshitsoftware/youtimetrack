@@ -125,7 +125,6 @@ func (t *Youtrack) Fetch(start, end time.Time) int {
 		panic(err)
 	}
 	req.Header.Set("Authorization", "Bearer "+t.Token)
-	req.Header.Set("Accept", "application/json")
 
 	client := http.Client{}
 	resp, err := client.Do(req)
