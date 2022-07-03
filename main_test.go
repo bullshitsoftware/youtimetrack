@@ -61,7 +61,7 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	now = time.Date(2022, 2, 24, 13, 13, 13, 13, time.Now().Location())
+	now = time.Date(2022, 2, 24, 13, 13, 13, 13, time.UTC)
 	home = path.Join(os.TempDir(), "youtimetrack")
 	code := m.Run()
 	os.RemoveAll(home)

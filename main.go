@@ -167,9 +167,9 @@ type Calendar struct {
 
 func (c *Calendar) Period(now time.Time) (time.Time, time.Time) {
 	curYear, curMonth, _ := now.Date()
-	start := time.Date(curYear, curMonth, 1, 0, 0, 0, 0, now.Location())
+	start := time.Date(curYear, curMonth, 1, 0, 0, 0, 0, time.UTC)
 	_, _, lastDay := start.AddDate(0, 1, -1).Date()
-	end := time.Date(curYear, curMonth, lastDay, 23, 59, 59, 59, now.Location())
+	end := time.Date(curYear, curMonth, lastDay, 23, 59, 59, 59, time.UTC)
 
 	return start, end
 }
