@@ -16,7 +16,7 @@ var (
 
 func init() {
 	now = time.Now()
-	home = path.Join(os.Getenv("HOME"), ".config", "youtimetrack")
+	home = path.Join(os.Getenv("HOME"), ".config", "ytt")
 }
 
 type App struct {

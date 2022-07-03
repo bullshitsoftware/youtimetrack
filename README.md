@@ -18,9 +18,9 @@ somewhere in your system.
 
 ## Usage
 
-Initialize the config file with `youtimetrack init` command, edit it to suite your needs.
+Initialize the config file with `ytt init` command, edit it to suite your needs.
 
 If you need some help with config then referrer to the
 [documentation](https://github.com/bullshitsoftware/youtimetrack/blob/master/main.go).
 
-Enjoy your time tracking by firing `youtimetrack` command!
+Enjoy your time tracking by firing `ytt` command!

@@ -1,7 +1,7 @@
 project_name: youtimetrack
 builds:
   - id: youtimetrack
-    binary: youtimetrack
+    binary: ytt
     goos:
       - linux
       - darwin

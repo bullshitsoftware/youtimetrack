@@ -63,7 +63,7 @@ func init() {
 
 func TestMain(m *testing.M) {
 	now = time.Date(2022, 2, 24, 13, 13, 13, 13, time.UTC)
-	home = path.Join(os.TempDir(), "youtimetrack")
+	home = path.Join(os.TempDir(), "ytt")
 	code := m.Run()
 	os.RemoveAll(home)
 
@@ -71,18 +71,18 @@ func TestMain(m *testing.M) {
 }
 
 func Example() {
-	os.Args = []string{"yourtimetrack", "init"}
+	os.Args = []string{"ytt", "init"}
 	main()
 
 	go ytServer.ListenAndServe()
-	os.Args = []string{"yourtimetrack"}
+	os.Args = []string{"ytt"}
 	main()
 
-	os.Args = []string{"youtimetrack", "details"}
+	os.Args = []string{"ytt", "details"}
 	main()
 	ytServer.Shutdown(context.TODO())
 
-	// Output: Created /tmp/youtimetrack/config.json
+	// Output: Created /tmp/ytt/config.json
 	// 1h 20m / 143h / 159h (worked / today / month)
 	// 2022-02-02 1h 20m XY-123 Issue summary
 }
