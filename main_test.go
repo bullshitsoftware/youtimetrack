@@ -27,7 +27,7 @@ func init() {
 		}
 
 		q := r.URL.Query()
-		if v, ok := q["fields"]; !ok || v[0] != "duration(minutes)" {
+		if v, ok := q["fields"]; !ok || v[0] != "issue(idReadable,summary),date,duration(minutes)" {
 			http.Error(w, "Missing or invalid \"fields\" query parameter", http.StatusBadRequest)
 
 			return
@@ -51,7 +51,8 @@ func init() {
 			return
 		}
 
-		w.Write([]byte("[{\"duration\":{\"minutes\":80}}]"))
+		b, _ := os.ReadFile("response.json")
+		w.Write(b)
 	})
 
 	ytServer = &http.Server{
@@ -76,8 +77,12 @@ func Example() {
 	go ytServer.ListenAndServe()
 	os.Args = []string{"yourtimetrack"}
 	main()
+
+	os.Args = []string{"youtimetrack", "details"}
+	main()
 	ytServer.Shutdown(context.TODO())
 
 	// Output: Created /tmp/youtimetrack/config.json
 	// 1h 20m / 143h / 159h (worked / today / month)
+	// 2022-02-02 1h 20m XY-123 Issue summary
 }

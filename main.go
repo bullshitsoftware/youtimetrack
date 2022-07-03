@@ -26,23 +26,20 @@ func init() {
 func main() {
 	app := Default()
 
-	if len(os.Args) == 2 && os.Args[1] == "init" {
-		app.SaveConfig()
-		fmt.Println("Created " + path.Join(home, config))
-
-		return
+	cmd := "summary"
+	if len(os.Args) > 1 {
+		cmd = os.Args[1]
 	}
-
-	app.ReadConfig()
-	start, end := app.Calendar.Period(now)
-	month := app.Calendar.Calc(start, end)
-	today := app.Calendar.Calc(start, now)
-	worked := app.Youtrack.Fetch(start, end)
-	fmt.Printf("%s / %s / %s (worked / today / month)\n",
-		FormatMinutes(worked),
-		FormatMinutes(today),
-		FormatMinutes(month),
-	)
+	switch cmd {
+	case "init":
+		Init(app)
+	case "details":
+		app.ReadConfig()
+		Details(app)
+	case "summary":
+		app.ReadConfig()
+		Summary(app)
+	}
 }
 
 func Default() *App {
@@ -60,6 +57,41 @@ func Default() *App {
 			SWorkdays: []string{"2022-02-21"},
 			Holidays:  []string{"2022-02-22"},
 		},
+	}
+}
+
+func Init(app *App) {
+	app.SaveConfig()
+	fmt.Println("Created " + path.Join(home, config))
+}
+
+func Summary(app *App) {
+	start, end := app.Calendar.Period(now)
+	month := app.Calendar.Calc(start, end)
+	today := app.Calendar.Calc(start, now)
+	items := app.Youtrack.Fetch(start, end)
+	worked := 0
+	for _, i := range items {
+		worked += i.Duration.Minutes
+	}
+	fmt.Printf("%s / %s / %s (worked / today / month)\n",
+		FormatMinutes(worked),
+		FormatMinutes(today),
+		FormatMinutes(month),
+	)
+}
+
+func Details(app *App) {
+	start, end := app.Calendar.Period(now)
+	items := app.Youtrack.Fetch(start, end)
+	for _, i := range items {
+		date := time.Unix(i.Date/1000, 0)
+		fmt.Println(
+			date.Format("2006-01-02"),
+			FormatMinutes(i.Duration.Minutes),
+			i.Issue.IdReadable,
+			i.Issue.Summary,
+		)
 	}
 }
 
@@ -107,9 +139,24 @@ type Youtrack struct {
 	Author  string `json:"author"`
 }
 
-func (t *Youtrack) Fetch(start, end time.Time) int {
+type Issue struct {
+	IdReadable string `json:"idReadable"`
+	Summary    string `josn:"summary"`
+}
+
+type WorkItemDuration struct {
+	Minutes int `json:"minutes"`
+}
+
+type WorkItem struct {
+	Issue    Issue            `json:"issue"`
+	Date     int64            `json:"date"`
+	Duration WorkItemDuration `json:"duration"`
+}
+
+func (t *Youtrack) Fetch(start, end time.Time) []WorkItem {
 	q := url.Values{}
-	q.Add("fields", "duration(minutes)")
+	q.Add("fields", "issue(idReadable,summary),date,duration(minutes)")
 	q.Add("author", t.Author)
 	q.Add("start", strconv.FormatInt(start.UnixMilli(), 10))
 	q.Add("end", strconv.FormatInt(end.UnixMilli(), 10))
@@ -133,26 +180,13 @@ func (t *Youtrack) Fetch(start, end time.Time) int {
 	}
 	defer resp.Body.Close()
 
-	type WorkItemDuration struct {
-		Minutes int `json:"minutes"`
-	}
-
-	type WorkItem struct {
-		Duration WorkItemDuration `json:"duration"`
-	}
-
 	items := []WorkItem{}
 	err = json.NewDecoder(resp.Body).Decode(&items)
 	if err != nil {
 		panic(err)
 	}
 
-	m := 0
-	for _, i := range items {
-		m += i.Duration.Minutes
-	}
-
-	return m
+	return items
 }
 
 type Calendar struct {
