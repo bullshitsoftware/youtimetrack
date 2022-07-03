@@ -19,12 +19,12 @@ func main() {
 	}
 
 	switch cmd {
-	case "init":
+	case "i", "init":
 		Init(app)
-	case "details":
+	case "d", "details":
 		app.ReadConfig()
 		Details(app, args)
-	case "summary":
+	case "s", "summary":
 		app.ReadConfig()
 		Summary(app, args)
 	}
