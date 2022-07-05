@@ -12,13 +12,38 @@ type Calendar struct {
 	Holidays  []string       `json:"holidays"`
 }
 
-func (c *Calendar) Period(now time.Time) (time.Time, time.Time) {
+type Period struct {
+	Start time.Time
+	End   time.Time
+}
+
+func (p *Period) ParseStart(s string) error {
+	start, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		return err
+	}
+
+	p.Start = start
+	return nil
+}
+
+func (p *Period) ParseEnd(s string) error {
+	end, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		return err
+	}
+
+	p.End = time.Date(end.Year(), end.Month(), end.Day(), 23, 59, 59, 0, time.UTC)
+	return nil
+}
+
+func (c *Calendar) Period(now time.Time) *Period {
 	curYear, curMonth, _ := now.Date()
 	start := time.Date(curYear, curMonth, 1, 0, 0, 0, 0, time.UTC)
 	_, _, lastDay := start.AddDate(0, 1, -1).Date()
 	end := time.Date(curYear, curMonth, lastDay, 23, 59, 59, 59, time.UTC)
 
-	return start, end
+	return &Period{start, end}
 }
 
 func (c *Calendar) Calc(start, end time.Time) int {

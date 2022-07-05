@@ -13,36 +13,20 @@ func Init(app *App) {
 }
 
 func Summary(app *App, args []string) {
-	start, end := app.Calendar.Period(now)
+	period := app.Calendar.Period(now)
 	fs := flag.NewFlagSet("summary", flag.ExitOnError)
-	fs.Func("start", "start date (2006-01-02)", func(s string) error {
-		var err error
-		start, err = time.Parse("2006-01-02", s)
-		if err != nil {
-			fmt.Printf("%v\n", start)
-			return err
-		}
-		return nil
-	})
-	fs.Func("end", "end date (2006-01-02)", func(s string) error {
-		var err error
-		end, err = time.Parse("2006-01-02", s)
-		if err != nil {
-			return err
-		}
-		end = time.Date(end.Year(), end.Month(), end.Day(), 23, 59, 59, 0, time.UTC)
-		return nil
-	})
+	fs.Func("start", "start date (2006-01-02)", period.ParseStart)
+	fs.Func("end", "end date (2006-01-02)", period.ParseEnd)
 	fs.Parse(args)
 
-	month := app.Calendar.Calc(start, end)
-	items := app.Youtrack.Fetch(start, end)
+	month := app.Calendar.Calc(period.Start, period.End)
+	items := app.Youtrack.Fetch(period.Start, period.End)
 	worked := 0
 	for _, i := range items {
 		worked += i.Duration.Minutes
 	}
 
-	if now.Before(start) || now.After(end) {
+	if now.Before(period.Start) || now.After(period.End) {
 		fmt.Printf("%s / %s (worked / month)\n",
 			FormatMinutes(worked),
 			FormatMinutes(month),
@@ -51,7 +35,7 @@ func Summary(app *App, args []string) {
 		return
 	}
 
-	today := app.Calendar.Calc(start, now)
+	today := app.Calendar.Calc(period.Start, now)
 	fmt.Printf("%s / %s / %s (worked / today / month)\n",
 		FormatMinutes(worked),
 		FormatMinutes(today),
@@ -60,29 +44,13 @@ func Summary(app *App, args []string) {
 }
 
 func Details(app *App, args []string) {
-	start, end := app.Calendar.Period(now)
+	period := app.Calendar.Period(now)
 	fs := flag.NewFlagSet("details", flag.ExitOnError)
-	fs.Func("start", "start date (2006-01-02)", func(s string) error {
-		var err error
-		start, err = time.Parse("2006-01-02", s)
-		if err != nil {
-			fmt.Printf("%v\n", start)
-			return err
-		}
-		return nil
-	})
-	fs.Func("end", "end date (2006-01-02)", func(s string) error {
-		var err error
-		end, err = time.Parse("2006-01-02", s)
-		if err != nil {
-			return err
-		}
-		end = time.Date(end.Year(), end.Month(), end.Day(), 23, 59, 59, 0, time.UTC)
-		return nil
-	})
+	fs.Func("start", "start date (2006-01-02)", period.ParseStart)
+	fs.Func("end", "end date (2006-01-02)", period.ParseEnd)
 	fs.Parse(args)
 
-	items := app.Youtrack.Fetch(start, end)
+	items := app.Youtrack.Fetch(period.Start, period.End)
 	for _, i := range items {
 		date := time.Unix(i.Date/1000, 0)
 		fmt.Println(

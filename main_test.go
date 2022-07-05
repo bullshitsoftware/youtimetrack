@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -39,20 +41,37 @@ func init() {
 			return
 		}
 
-		if v, ok := q["start"]; !ok || v[0] != "1643673600000" {
-			http.Error(w, "Missing or invalid \"start\" query parameter", http.StatusBadRequest)
+		if _, ok := q["start"]; !ok {
+			http.Error(w, "Missing \"start\" query parameter", http.StatusBadRequest)
 
 			return
 		}
 
-		if v, ok := q["end"]; !ok || v[0] != "1646092799000" {
-			http.Error(w, "Missing or invalid \"end\" query parameter", http.StatusBadRequest)
+		if _, ok := q["end"]; !ok {
+			http.Error(w, "Missing \"end\" query parameter", http.StatusBadRequest)
 
 			return
 		}
 
-		b, _ := os.ReadFile("response.json")
-		w.Write(b)
+		start, _ := strconv.ParseInt(q["start"][0], 10, 64)
+		end, _ := strconv.ParseInt(q["end"][0], 10, 64)
+
+		items := []WorkItem{
+			{
+				Issue{"XY-123", "Issue summary"},
+				1643790339000, // 2022-02-02 07:25:39
+				WorkItemDuration{80},
+			},
+		}
+		rItems := []WorkItem{}
+		for _, i := range items {
+			if start <= i.Date && end >= i.Date {
+				rItems = append(rItems, i)
+			}
+		}
+		resp, _ := json.Marshal(rItems)
+
+		w.Write(resp)
 	})
 
 	ytServer = &http.Server{
@@ -78,11 +97,15 @@ func Example() {
 	os.Args = []string{"ytt"}
 	main()
 
+	os.Args = []string{"ytt", "--start", "2022-02-03", "--end", "2022-02-22"}
+	main()
+
 	os.Args = []string{"ytt", "details"}
 	main()
 	ytServer.Shutdown(context.TODO())
 
 	// Output: Created /tmp/ytt/config.json
 	// 1h 20m / 143h / 159h (worked / today / month)
+	// 0h / 111h (worked / month)
 	// 2022-02-02 1h 20m XY-123 Issue summary
 }
