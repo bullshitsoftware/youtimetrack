@@ -53,7 +53,8 @@ func Details(app *App, args []string) {
 	items := app.Youtrack.Fetch(period.Start, period.End)
 	for _, i := range items {
 		date := time.Unix(i.Date/1000, 0)
-		fmt.Println(
+		fmt.Printf(
+			"%s\t%s\t%s\t%s\n",
 			date.Format("2006-01-02"),
 			FormatMinutes(i.Duration.Minutes),
 			i.Issue.IdReadable,

@@ -107,5 +107,5 @@ func Example() {
 	// Output: Created /tmp/ytt/config.json
 	// 1h 20m / 143h / 159h (worked / today / month)
 	// 0h / 111h (worked / month)
-	// 2022-02-02 1h 20m XY-123 Issue summary
+	// 2022-02-02	1h 20m	XY-123	Issue summary
 }
