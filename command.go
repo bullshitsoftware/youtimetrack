@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"path"
+	"strings"
 	"time"
 )
 
@@ -60,6 +61,8 @@ func Details(app *App, args []string) {
 			i.Issue.IdReadable,
 			i.Issue.Summary,
 		)
-		fmt.Printf("\t\t\t%s\n", i.Text)
+		for _, s := range strings.Split(i.Text, "\n") {
+			fmt.Printf("\t\t\t%s\n", s)
+		}
 	}
 }
