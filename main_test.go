@@ -29,7 +29,7 @@ func init() {
 		}
 
 		q := r.URL.Query()
-		if v, ok := q["fields"]; !ok || v[0] != "issue(idReadable,summary),date,duration(minutes)" {
+		if v, ok := q["fields"]; !ok || v[0] != "issue(idReadable,summary),date,duration(minutes),text" {
 			http.Error(w, "Missing or invalid \"fields\" query parameter", http.StatusBadRequest)
 
 			return
@@ -61,6 +61,7 @@ func init() {
 				Issue{"XY-123", "Issue summary"},
 				1643790339000, // 2022-02-02 07:25:39
 				WorkItemDuration{80},
+				"Text",
 			},
 		}
 		rItems := []WorkItem{}
@@ -108,4 +109,5 @@ func Example() {
 	// 1h20m / 143h / 159h (worked / today / month)
 	// 0h / 111h (worked / month)
 	// 2022-02-02	1h20m	XY-123	Issue summary
+	// 			Text
 }

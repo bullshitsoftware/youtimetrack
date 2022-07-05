@@ -60,5 +60,6 @@ func Details(app *App, args []string) {
 			i.Issue.IdReadable,
 			i.Issue.Summary,
 		)
+		fmt.Printf("\t\t\t%s\n", i.Text)
 	}
 }

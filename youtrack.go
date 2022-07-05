@@ -27,11 +27,12 @@ type WorkItem struct {
 	Issue    Issue            `json:"issue"`
 	Date     int64            `json:"date"`
 	Duration WorkItemDuration `json:"duration"`
+	Text     string           `json:"text"`
 }
 
 func (t *Youtrack) Fetch(start, end time.Time) []WorkItem {
 	q := url.Values{}
-	q.Add("fields", "issue(idReadable,summary),date,duration(minutes)")
+	q.Add("fields", "issue(idReadable,summary),date,duration(minutes),text")
 	q.Add("author", t.Author)
 	q.Add("start", strconv.FormatInt(start.UnixMilli(), 10))
 	q.Add("end", strconv.FormatInt(end.UnixMilli(), 10))
