@@ -27,5 +27,8 @@ func main() {
 	case "s", "summary":
 		app.ReadConfig()
 		Summary(app, args)
+	case "a", "add":
+		app.ReadConfig()
+		Add(app, args)
 	}
 }

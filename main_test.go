@@ -58,10 +58,10 @@ func init() {
 
 		items := []WorkItem{
 			{
-				Issue{"XY-123", "Issue summary"},
-				1643790339000, // 2022-02-02 07:25:39
-				WorkItemDuration{80},
-				"Text1\nText2",
+				Issue:    &Issue{"XY-123", "Issue summary"},
+				Date:     1643790339000, // 2022-02-02 07:25:39
+				Duration: Duration{Minutes: 80},
+				Text:     "Text1\nText2",
 			},
 		}
 		rItems := []WorkItem{}

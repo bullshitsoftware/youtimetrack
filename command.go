@@ -66,3 +66,24 @@ func Details(app *App, args []string) {
 		}
 	}
 }
+
+func Add(app *App, args []string) {
+	if len(args) != 4 {
+		panic("Invalid arguments number")
+	}
+	typeName := strings.ToLower(args[0])
+	types := app.Youtrack.WorkItemTypes()
+	var t Type
+	for _, i := range types {
+		s := strings.ToLower(i.Name)
+		if strings.HasPrefix(s, typeName) {
+			t = i
+			break
+		}
+	}
+	issue := args[1]
+	duration := args[2]
+	text := args[3]
+
+	app.Youtrack.Add(t, issue, duration, text)
+}
