@@ -41,7 +41,7 @@ func (c *Calendar) Period(now time.Time) *Period {
 	curYear, curMonth, _ := now.Date()
 	start := time.Date(curYear, curMonth, 1, 0, 0, 0, 0, time.UTC)
 	_, _, lastDay := start.AddDate(0, 1, -1).Date()
-	end := time.Date(curYear, curMonth, lastDay, 23, 59, 59, 59, time.UTC)
+	end := time.Date(curYear, curMonth, lastDay, 23, 59, 59, 0, time.UTC)
 
 	return &Period{start, end}
 }
