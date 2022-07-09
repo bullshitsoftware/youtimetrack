@@ -1,4 +1,4 @@
-package main
+package youtrack
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ func TestYoutrack_WorkItemTypes(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	yt := Youtrack{
+	yt := Client{
 		BaseUrl: ts.URL,
 		Token:   "token",
 		Author:  "id",
@@ -54,7 +54,7 @@ func TestYoutrack_Add(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	yt := Youtrack{
+	yt := Client{
 		BaseUrl: ts.URL,
 		Token:   "token",
 		Author:  "id",

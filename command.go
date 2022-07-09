@@ -6,6 +6,8 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	yt "github.com/bullshitsoftware/youtimetrack/internal/pkg/youtrack"
 )
 
 func Init(app *App) {
@@ -73,7 +75,7 @@ func Add(app *App, args []string) {
 	}
 	typeName := strings.ToLower(args[0])
 	types := app.Youtrack.WorkItemTypes()
-	var t Type
+	var t yt.Type
 	for _, i := range types {
 		s := strings.ToLower(i.Name)
 		if strings.HasPrefix(s, typeName) {

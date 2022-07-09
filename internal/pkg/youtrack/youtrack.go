@@ -1,4 +1,4 @@
-package main
+package youtrack
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type Youtrack struct {
+type Client struct {
 	BaseUrl string `json:"base_url"`
 	Token   string `json:"token"`
 	Author  string `json:"author"`
@@ -38,14 +38,14 @@ type WorkItem struct {
 	Text     string   `json:"text"`
 }
 
-func (t *Youtrack) Fetch(start, end time.Time) []WorkItem {
+func (c *Client) Fetch(start, end time.Time) []WorkItem {
 	q := url.Values{}
 	q.Add("fields", "issue(idReadable,summary),date,duration(minutes),text")
-	q.Add("author", t.Author)
+	q.Add("author", c.Author)
 	q.Add("start", strconv.FormatInt(start.UnixMilli(), 10))
 	q.Add("end", strconv.FormatInt(end.UnixMilli(), 10))
 
-	u, err := url.Parse(t.BaseUrl + "/workItems")
+	u, err := url.Parse(c.BaseUrl + "/workItems")
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func (t *Youtrack) Fetch(start, end time.Time) []WorkItem {
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Set("Authorization", "Bearer "+t.Token)
+	req.Header.Set("Authorization", "Bearer "+c.Token)
 
 	client := http.Client{}
 	resp, err := client.Do(req)
@@ -73,11 +73,11 @@ func (t *Youtrack) Fetch(start, end time.Time) []WorkItem {
 	return items
 }
 
-func (t *Youtrack) WorkItemTypes() []Type {
+func (c *Client) WorkItemTypes() []Type {
 	q := url.Values{}
 	q.Add("fields", "id,name")
 
-	u, err := url.Parse(t.BaseUrl + "/admin/timeTrackingSettings/workItemTypes")
+	u, err := url.Parse(c.BaseUrl + "/admin/timeTrackingSettings/workItemTypes")
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +87,7 @@ func (t *Youtrack) WorkItemTypes() []Type {
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Set("Authorization", "Bearer "+t.Token)
+	req.Header.Set("Authorization", "Bearer "+c.Token)
 
 	client := http.Client{}
 	resp, err := client.Do(req)
@@ -105,7 +105,7 @@ func (t *Youtrack) WorkItemTypes() []Type {
 	return items
 }
 
-func (t *Youtrack) Add(itemType Type, issueId, duration, text string) {
+func (c *Client) Add(itemType Type, issueId, duration, text string) {
 	body := WorkItem{
 		Type:     itemType,
 		Duration: Duration{Presentation: "1h"},
@@ -113,11 +113,11 @@ func (t *Youtrack) Add(itemType Type, issueId, duration, text string) {
 	}
 	b, _ := json.Marshal(body)
 
-	req, err := http.NewRequest("POST", t.BaseUrl+"/issues/"+issueId+"/timeTracking/workItems", bytes.NewReader(b))
+	req, err := http.NewRequest("POST", c.BaseUrl+"/issues/"+issueId+"/timeTracking/workItems", bytes.NewReader(b))
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Set("Authorization", "Bearer "+t.Token)
+	req.Header.Set("Authorization", "Bearer "+c.Token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := http.Client{}

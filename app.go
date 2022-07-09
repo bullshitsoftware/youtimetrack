@@ -5,6 +5,9 @@ import (
 	"os"
 	"path"
 	"time"
+
+	cal "github.com/bullshitsoftware/youtimetrack/internal/pkg/calendar"
+	yt "github.com/bullshitsoftware/youtimetrack/internal/pkg/youtrack"
 )
 
 const config = "config.json"
@@ -20,18 +23,18 @@ func init() {
 }
 
 type App struct {
-	Youtrack Youtrack `json:"youtrack"`
-	Calendar Calendar `json:"calendar"`
+	Youtrack yt.Client    `json:"youtrack"`
+	Calendar cal.Calendar `json:"calendar"`
 }
 
 func Default() *App {
 	return &App{
-		Youtrack{
+		yt.Client{
 			BaseUrl: "http://localhost:2378/api",
 			Token:   "your-token",
 			Author:  "your-user-uuid",
 		},
-		Calendar{
+		cal.Calendar{
 			DayDur:    8 * 60,
 			SDayDur:   7 * 60,
 			Weekends:  []time.Weekday{time.Saturday, time.Sunday},

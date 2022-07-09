@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	yt "github.com/bullshitsoftware/youtimetrack/internal/pkg/youtrack"
 )
 
 var ytServer *http.Server
@@ -56,15 +58,15 @@ func init() {
 		start, _ := strconv.ParseInt(q["start"][0], 10, 64)
 		end, _ := strconv.ParseInt(q["end"][0], 10, 64)
 
-		items := []WorkItem{
+		items := []yt.WorkItem{
 			{
-				Issue:    &Issue{"XY-123", "Issue summary"},
+				Issue:    &yt.Issue{IdReadable: "XY-123", Summary: "Issue summary"},
 				Date:     1643790339000, // 2022-02-02 07:25:39
-				Duration: Duration{Minutes: 80},
+				Duration: yt.Duration{Minutes: 80},
 				Text:     "Text1\nText2",
 			},
 		}
-		rItems := []WorkItem{}
+		rItems := []yt.WorkItem{}
 		for _, i := range items {
 			if start <= i.Date && end >= i.Date {
 				rItems = append(rItems, i)
