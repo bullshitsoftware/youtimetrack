@@ -5,7 +5,8 @@
   "extensions": [
     "golang.Go",
     "eamodio.gitlens",
-    "EditorConfig.EditorConfig"
+    "EditorConfig.EditorConfig",
+    "ms-vscode.makefile-tools"
   ],
   "settings": {
       "editor.rulers": [120, 160]

@@ -1,6 +1,6 @@
 FROM golang:1.18.3-alpine
 
-RUN apk add gcc musl-dev curl git openssh fish starship
+RUN apk add gcc musl-dev curl git openssh make fish starship
 
 RUN go install github.com/cweill/gotests/gotests@latest
 RUN go install github.com/fatih/gomodifytags@latest
