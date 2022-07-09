@@ -3,19 +3,31 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"path"
 	"strings"
 	"time"
 
+	"github.com/bullshitsoftware/youtimetrack/internal/app"
 	yt "github.com/bullshitsoftware/youtimetrack/internal/pkg/youtrack"
 )
 
-func Init(app *App) {
-	app.SaveConfig()
-	fmt.Println("Created " + path.Join(home, config))
+var (
+	now  time.Time
+	home string
+)
+
+func init() {
+	now = time.Now()
+	home = path.Join(os.Getenv("HOME"), ".config", "ytt")
 }
 
-func Summary(app *App, args []string) {
+func Init(app *app.App) {
+	p := app.SaveConfig(home)
+	fmt.Println("Created " + p)
+}
+
+func Summary(app *app.App, args []string) {
 	period := app.Calendar.Period(now)
 	fs := flag.NewFlagSet("summary", flag.ExitOnError)
 	fs.Func("start", "start date (2006-01-02)", period.ParseStart)
@@ -46,7 +58,7 @@ func Summary(app *App, args []string) {
 	)
 }
 
-func Details(app *App, args []string) {
+func Details(app *app.App, args []string) {
 	period := app.Calendar.Period(now)
 	fs := flag.NewFlagSet("details", flag.ExitOnError)
 	fs.Func("start", "start date (2006-01-02)", period.ParseStart)
@@ -69,7 +81,7 @@ func Details(app *App, args []string) {
 	}
 }
 
-func Add(app *App, args []string) {
+func Add(app *app.App, args []string) {
 	if len(args) != 4 {
 		panic("Invalid arguments number")
 	}

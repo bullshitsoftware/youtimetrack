@@ -3,10 +3,12 @@ package main
 import (
 	"os"
 	"strings"
+
+	"github.com/bullshitsoftware/youtimetrack/internal/app"
 )
 
 func main() {
-	app := Default()
+	app := app.Default()
 
 	var args []string
 	var cmd string
@@ -22,13 +24,13 @@ func main() {
 	case "i", "init":
 		Init(app)
 	case "d", "details":
-		app.ReadConfig()
+		app.ReadConfig(home)
 		Details(app, args)
 	case "s", "summary":
-		app.ReadConfig()
+		app.ReadConfig(home)
 		Summary(app, args)
 	case "a", "add":
-		app.ReadConfig()
+		app.ReadConfig(home)
 		Add(app, args)
 	}
 }

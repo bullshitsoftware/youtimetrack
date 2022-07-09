@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"encoding/json"
@@ -11,16 +11,6 @@ import (
 )
 
 const config = "config.json"
-
-var (
-	now  time.Time
-	home string
-)
-
-func init() {
-	now = time.Now()
-	home = path.Join(os.Getenv("HOME"), ".config", "ytt")
-}
 
 type App struct {
 	Youtrack yt.Client    `json:"youtrack"`
@@ -45,13 +35,14 @@ func Default() *App {
 	}
 }
 
-func (a *App) SaveConfig() {
+func (a *App) SaveConfig(home string) string {
 	err := os.MkdirAll(home, 0700)
 	if err != nil {
 		panic(err)
 	}
 
-	f, err := os.Create(path.Join(home, config))
+	p := path.Join(home, config)
+	f, err := os.Create(p)
 	if err != nil {
 		panic(err)
 	}
@@ -63,9 +54,11 @@ func (a *App) SaveConfig() {
 	if err != nil {
 		panic(err)
 	}
+
+	return p
 }
 
-func (a *App) ReadConfig() {
+func (a *App) ReadConfig(home string) {
 	f, err := os.Open(path.Join(home, config))
 	if err != nil {
 		panic(err)
