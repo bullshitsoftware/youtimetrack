@@ -1,5 +1,6 @@
 # YouTimeTrack
 
+[![build](https://github.com/bullshitsoftware/youtimetrack/actions/workflows/ci.yml/badge.svg)](https://github.com/bullshitsoftware/youtimetrack/actions/workflows/ci.yml)
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
 [![Coverage Status](https://coveralls.io/repos/github/bullshitsoftware/youtimetrack/badge.svg?branch=master)](https://coveralls.io/github/bullshitsoftware/youtimetrack?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bullshitsoftware/youtimetrack)](https://goreportcard.com/report/github.com/bullshitsoftware/youtimetrack)
