@@ -11,6 +11,7 @@ RUN go install honnef.co/go/tools/cmd/staticcheck@latest
 RUN go install golang.org/x/tools/gopls@latest
 
 RUN adduser -u 1000 -D -s /usr/bin/fish user
+RUN chown -R user:user /go/pkg
 USER user
 
 RUN mkdir -p ~/.config/fish && echo "starship init fish | source" > ~/.config/fish/config.fish
