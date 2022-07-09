@@ -35,7 +35,8 @@ func Summary(app *app.App, args []string) {
 	fs.Parse(args)
 
 	month := app.Calendar.Calc(period.Start, period.End)
-	items := app.Youtrack.Fetch(period.Start, period.End)
+	items, err := app.Youtrack.WorkItems(period.Start, period.End)
+	ExitOnError(err)
 	worked := 0
 	for _, i := range items {
 		worked += i.Duration.Minutes
@@ -65,7 +66,8 @@ func Details(app *app.App, args []string) {
 	fs.Func("end", "end date (2006-01-02)", period.ParseEnd)
 	fs.Parse(args)
 
-	items := app.Youtrack.Fetch(period.Start, period.End)
+	items, err := app.Youtrack.WorkItems(period.Start, period.End)
+	ExitOnError(err)
 	for _, i := range items {
 		date := time.Unix(i.Date/1000, 0)
 		fmt.Printf(
@@ -86,7 +88,8 @@ func Add(app *app.App, args []string) {
 		panic("Invalid arguments number")
 	}
 	typeName := strings.ToLower(args[0])
-	types := app.Youtrack.WorkItemTypes()
+	types, err := app.Youtrack.WorkItemTypes()
+	ExitOnError(err)
 	var t yt.Type
 	for _, i := range types {
 		s := strings.ToLower(i.Name)
@@ -100,4 +103,11 @@ func Add(app *app.App, args []string) {
 	text := args[3]
 
 	app.Youtrack.Add(t, issue, duration, text)
+}
+
+func ExitOnError(err error) {
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
 }

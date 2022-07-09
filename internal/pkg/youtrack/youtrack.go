@@ -3,6 +3,7 @@ package youtrack
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,6 +14,23 @@ type Client struct {
 	BaseUrl string `json:"base_url"`
 	Token   string `json:"token"`
 	Author  string `json:"author"`
+}
+
+type UnexpectedResponseError struct {
+	Status string
+	Body   []byte
+}
+
+func NewUnexpectedResponseError(r *http.Response) *UnexpectedResponseError {
+	body, _ := io.ReadAll(r.Body)
+	return &UnexpectedResponseError{
+		Status: r.Status,
+		Body:   body,
+	}
+}
+
+func (e *UnexpectedResponseError) Error() string {
+	return "unexpected response status: " + e.Status
 }
 
 type Issue struct {
@@ -38,74 +56,56 @@ type WorkItem struct {
 	Text     string   `json:"text"`
 }
 
-func (c *Client) Fetch(start, end time.Time) []WorkItem {
+func (c *Client) WorkItems(start, end time.Time) ([]WorkItem, error) {
 	q := url.Values{}
 	q.Add("fields", "issue(idReadable,summary),date,duration(minutes),text")
 	q.Add("author", c.Author)
 	q.Add("start", strconv.FormatInt(start.UnixMilli(), 10))
 	q.Add("end", strconv.FormatInt(end.UnixMilli(), 10))
 
-	u, err := url.Parse(c.BaseUrl + "/workItems")
+	resp, err := c.request(http.MethodGet, "/workItems", q, nil)
 	if err != nil {
-		panic(err)
-	}
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic(err)
-	}
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-
-	client := http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, NewUnexpectedResponseError(resp)
+	}
 
 	items := []WorkItem{}
 	err = json.NewDecoder(resp.Body).Decode(&items)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return items
+	return items, nil
 }
 
-func (c *Client) WorkItemTypes() []Type {
+func (c *Client) WorkItemTypes() ([]Type, error) {
 	q := url.Values{}
 	q.Add("fields", "id,name")
 
-	u, err := url.Parse(c.BaseUrl + "/admin/timeTrackingSettings/workItemTypes")
+	resp, err := c.request(http.MethodGet, "/admin/timeTrackingSettings/workItemTypes", q, nil)
 	if err != nil {
-		panic(err)
-	}
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic(err)
-	}
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-
-	client := http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, NewUnexpectedResponseError(resp)
+	}
 
 	items := []Type{}
 	err = json.NewDecoder(resp.Body).Decode(&items)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return items
+	return items, nil
 }
 
-func (c *Client) Add(itemType Type, issueId, duration, text string) {
+func (c *Client) Add(itemType Type, issueId, duration, text string) error {
 	body := WorkItem{
 		Type:     itemType,
 		Duration: Duration{Presentation: "1h"},
@@ -113,9 +113,25 @@ func (c *Client) Add(itemType Type, issueId, duration, text string) {
 	}
 	b, _ := json.Marshal(body)
 
-	req, err := http.NewRequest("POST", c.BaseUrl+"/issues/"+issueId+"/timeTracking/workItems", bytes.NewReader(b))
+	resp, err := c.request(http.MethodPost, "/issues/"+issueId+"/timeTracking/workItems", nil, bytes.NewReader(b))
 	if err != nil {
-		panic(err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
+}
+
+func (c *Client) request(method, path string, values url.Values, body io.Reader) (*http.Response, error) {
+	u, err := url.Parse(c.BaseUrl + path)
+	if err != nil {
+		return nil, err
+	}
+	u.RawQuery = values.Encode()
+
+	req, err := http.NewRequest(method, u.String(), body)
+	if err != nil {
+		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+c.Token)
 	req.Header.Set("Content-Type", "application/json")
@@ -123,7 +139,8 @@ func (c *Client) Add(itemType Type, issueId, duration, text string) {
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	defer resp.Body.Close()
+
+	return resp, nil
 }
