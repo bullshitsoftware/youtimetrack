@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 	"time"
@@ -11,6 +12,12 @@ import (
 )
 
 const config = "config.json"
+
+var home string
+
+func init() {
+	home = path.Join(os.Getenv("HOME"), ".config", "ytt")
+}
 
 type App struct {
 	Youtrack yt.Client    `json:"youtrack"`
@@ -35,16 +42,16 @@ func Default() *App {
 	}
 }
 
-func (a *App) SaveConfig(home string) string {
+func (a *App) SaveConfig() (string, error) {
 	err := os.MkdirAll(home, 0700)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	p := path.Join(home, config)
 	f, err := os.Create(p)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	defer f.Close()
 
@@ -52,21 +59,43 @@ func (a *App) SaveConfig(home string) string {
 	enc.SetIndent("", "  ")
 	err = enc.Encode(a)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return p
+	return p, nil
 }
 
-func (a *App) ReadConfig(home string) {
+func (a *App) ReadConfig() error {
 	f, err := os.Open(path.Join(home, config))
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer f.Close()
 
 	err = json.NewDecoder(f).Decode(a)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
+}
+
+func ExitOnError(err error) {
+	if err != nil {
+		printError(err)
+		os.Exit(1)
+	}
+}
+
+func printError(err error) {
+	fmt.Println("Error:", err)
+}
+
+func FormatMinutes(m int) string {
+	s := fmt.Sprintf("%dh", m/60)
+	if m%60 > 0 {
+		s += fmt.Sprintf("%dm", m%60)
+	}
+
+	return s
 }

@@ -1,12 +1,22 @@
 project_name: youtimetrack
 builds:
-  - id: youtimetrack
-    binary: ytt
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch: 
-      - amd64
-      - arm
-      - arm64
+  - id: yttadd
+    binary: yttadd
+    main: ./cmd/yttadd
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm, arm64]
+  - id: yttconf
+    binary: yttconf
+    main: ./cmd/yttconf
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm, arm64]
+  - id: yttdet
+    binary: yttdet
+    main: ./cmd/yttdet
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm, arm64]
+  - id: yttsum
+    binary: yttsum
+    main: ./cmd/yttsum
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm, arm64]
