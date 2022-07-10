@@ -33,17 +33,21 @@ func main() {
 
 	items, err := yt.WorkItems(period.Start, period.End)
 	app.ExitOnError(err)
-	for _, i := range items {
-		date := time.Unix(i.Date/1000, 0)
+	for _, item := range items {
+		date := time.Unix(item.Date/1000, 0)
 		fmt.Printf(
 			"%s\t%s\t%s\t%s\n",
 			date.Format("2006-01-02"),
-			app.FormatMinutes(i.Duration.Minutes),
-			i.Issue.IdReadable,
-			i.Issue.Summary,
+			app.FormatMinutes(item.Duration.Minutes),
+			item.Issue.IdReadable,
+			item.Issue.Summary,
 		)
-		for _, s := range strings.Split(i.Text, "\n") {
-			fmt.Printf("\t\t\t%s\n", s)
+		for i, s := range strings.Split(item.Text, "\n") {
+			if i == 0 {
+				fmt.Printf("%s\t\t%s\n", item.Id, s)
+			} else {
+				fmt.Printf("\t\t\t%s\n", s)
+			}
 		}
 	}
 }

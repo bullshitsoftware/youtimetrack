@@ -43,6 +43,7 @@ func (yt *YoutrackStub) WorkItems(start, end time.Time) ([]youtrack.WorkItem, er
 	issue := &youtrack.Issue{IdReadable: "XY-123", Summary: "Do something cool"}
 	items := []youtrack.WorkItem{
 		{
+			Id:       "110-12312",
 			Issue:    issue,
 			Date:     time.Date(2007, 1, 10, 3, 4, 5, 0, time.UTC).UnixMilli(),
 			Duration: youtrack.Duration{Minutes: 30},
@@ -50,6 +51,7 @@ func (yt *YoutrackStub) WorkItems(start, end time.Time) ([]youtrack.WorkItem, er
 			Text:     "did something cool",
 		},
 		{
+			Id:       "110-12313",
 			Issue:    issue,
 			Date:     time.Date(2007, 1, 15, 3, 4, 5, 0, time.UTC).UnixMilli(),
 			Duration: youtrack.Duration{Minutes: 30},
@@ -80,7 +82,7 @@ func Example() {
 
 	// Output:
 	// 2007-01-10	0h30m	XY-123	Do something cool
-	// 			did something cool
+	// 110-12312		did something cool
 	// 2007-01-15	0h30m	XY-123	Do something cool
-	// 			opsed something cool
+	// 110-12313		opsed something cool
 }

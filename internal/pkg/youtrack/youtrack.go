@@ -49,6 +49,7 @@ type Type struct {
 }
 
 type WorkItem struct {
+	Id       string   `json:"id"`
 	Issue    *Issue   `json:"issue,omitempty"`
 	Date     int64    `json:"date,omitempty"`
 	Duration Duration `json:"duration"`
@@ -58,7 +59,7 @@ type WorkItem struct {
 
 func (c *Client) WorkItems(start, end time.Time) ([]WorkItem, error) {
 	q := url.Values{}
-	q.Add("fields", "issue(idReadable,summary),date,duration(minutes),text")
+	q.Add("fields", "id,issue(idReadable,summary),date,duration(minutes),text")
 	q.Add("author", c.Author)
 	q.Add("start", strconv.FormatInt(start.UnixMilli(), 10))
 	q.Add("end", strconv.FormatInt(end.UnixMilli(), 10))

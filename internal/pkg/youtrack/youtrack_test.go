@@ -48,7 +48,7 @@ func TestClient_WorkItems(t *testing.T) {
 
 		q := r.URL.Query()
 		assert.Len(q, 4)
-		assert.Equal([]string{"issue(idReadable,summary),date,duration(minutes),text"}, q["fields"])
+		assert.Equal([]string{"id,issue(idReadable,summary),date,duration(minutes),text"}, q["fields"])
 		assert.Equal([]string{"id"}, q["author"])
 		assert.Equal([]string{strconv.FormatInt(start.UnixMilli(), 10)}, q["start"])
 		assert.Equal([]string{strconv.FormatInt(end.UnixMilli(), 10)}, q["end"])
