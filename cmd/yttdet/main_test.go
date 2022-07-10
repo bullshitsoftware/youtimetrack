@@ -56,7 +56,7 @@ func (yt *YoutrackStub) WorkItems(start, end time.Time) ([]youtrack.WorkItem, er
 			Date:     time.Date(2007, 1, 15, 3, 4, 5, 0, time.UTC).UnixMilli(),
 			Duration: youtrack.Duration{Minutes: 30},
 			Type:     youtrack.Type{Id: "321", Name: "DevOps"},
-			Text:     "opsed something cool",
+			Text:     "opsed something\ncool",
 		},
 	}
 
@@ -84,5 +84,6 @@ func Example() {
 	// 2007-01-10	0h30m	XY-123	Do something cool
 	// 110-12312		did something cool
 	// 2007-01-15	0h30m	XY-123	Do something cool
-	// 110-12313		opsed something cool
+	// 110-12313		opsed something
+	// 			cool
 }
