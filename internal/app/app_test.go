@@ -68,6 +68,7 @@ func TestApp_Save(t *testing.T) {
 				Workdays:  []string{"2022-01-01"},
 				SWorkdays: []string{"2022-01-02"},
 				Holidays:  []string{"2022-01-03"},
+				Vacations: []CalendarVacation{{"2022-01-04", "2022-01-06"}},
 			},
 		},
 	}
@@ -93,14 +94,31 @@ func TestApp_NewCalendar(t *testing.T) {
 	app.cfg.Calendar.Workdays = []string{"2007-01-02"}
 	app.cfg.Calendar.SWorkdays = []string{"2007-01-03"}
 	app.cfg.Calendar.Holidays = []string{"2007-01-04"}
+	app.cfg.Calendar.Vacations = []CalendarVacation{{"2022-01-05", "2022-01-07"}}
 
-	cal := app.NewCalendar().(*calendar.Calendar)
-	assert.Equal(8, cal.DayDur)
-	assert.Equal(7, cal.SDayDur)
-	assert.Equal([]time.Weekday{time.Sunday}, cal.Weekends)
-	assert.Equal([]string{"2007-01-02"}, cal.Workdays)
-	assert.Equal([]string{"2007-01-03"}, cal.SWorkdays)
-	assert.Equal([]string{"2007-01-04"}, cal.Holidays)
+	var cal Calendar
+	var err error
+	cal, err = app.NewCalendar()
+	assert.NoError(err)
+	c := cal.(*calendar.Calendar)
+	assert.Equal(8, c.DayDur)
+	assert.Equal(7, c.SDayDur)
+	assert.Equal([]time.Weekday{time.Sunday}, c.Weekends)
+	assert.Equal([]string{"2007-01-02"}, c.Workdays)
+	assert.Equal([]string{"2007-01-03"}, c.SWorkdays)
+	assert.Equal([]string{"2022-01-05", "2022-01-06", "2022-01-07", "2007-01-04"}, c.Holidays)
+
+	app.cfg.Calendar.Vacations = []CalendarVacation{{"start", "2022-01-07"}}
+	cal, err = app.NewCalendar()
+	assert.Error(err)
+	assert.ErrorContains(err, "cannot parse \"start\"")
+	assert.Nil(cal)
+
+	app.cfg.Calendar.Vacations = []CalendarVacation{{"2022-01-05", "end"}}
+	cal, err = app.NewCalendar()
+	assert.Error(err)
+	assert.ErrorContains(err, "cannot parse \"end\"")
+	assert.Nil(cal)
 }
 
 func TestApp_NewYoutrack(t *testing.T) {

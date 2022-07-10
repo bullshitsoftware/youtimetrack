@@ -11,7 +11,7 @@ import (
 
 type App interface {
 	Load()
-	NewCalendar() app.Calendar
+	NewCalendar() (app.Calendar, error)
 	NewYoutrack() app.Youtrack
 }
 
@@ -23,7 +23,8 @@ var (
 func main() {
 	a.Load()
 
-	cal := a.NewCalendar()
+	cal, err := a.NewCalendar()
+	app.ExitOnError(err)
 	yt := a.NewYoutrack()
 
 	period := cal.Period(now)

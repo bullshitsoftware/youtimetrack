@@ -57,17 +57,35 @@ func (a *App) Save() string {
 	return p
 }
 
-func (a *App) NewCalendar() Calendar {
+func (a *App) NewCalendar() (Calendar, error) {
 	c := a.cfg.Calendar
-	return &cal.Calendar{
+	holidays := []string{}
+	for _, v := range c.Vacations {
+		s, err := time.Parse("2006-01-02", v.Start)
+		if err != nil {
+			return nil, err
+		}
+		e, err := time.Parse("2006-01-02", v.End)
+		if err != nil {
+			return nil, err
+		}
+		for cur := s; cur.Before(e) || cur.Equal(e); cur = cur.AddDate(0, 0, 1) {
+			holidays = append(holidays, cur.Format("2006-01-02"))
+		}
+	}
+
+	holidays = append(holidays, c.Holidays...)
+	calendar := &cal.Calendar{
 		DayDur:  c.DayDur,
 		SDayDur: c.SDayDur,
 
 		Weekends:  c.Weekends,
 		Workdays:  c.Workdays,
 		SWorkdays: c.SWorkdays,
-		Holidays:  c.Holidays,
+		Holidays:  holidays,
 	}
+
+	return calendar, nil
 }
 
 func (a *App) NewYoutrack() Youtrack {

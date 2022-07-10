@@ -12,8 +12,8 @@ type AppStub struct{}
 
 func (s *AppStub) Load() {}
 
-func (s *AppStub) NewCalendar() app.Calendar {
-	return &CalendarStub{}
+func (s *AppStub) NewCalendar() (app.Calendar, error) {
+	return &CalendarStub{}, nil
 }
 
 func (s *AppStub) NewYoutrack() app.Youtrack {
