@@ -33,10 +33,11 @@ func main() {
 	a.Load()
 	yt := a.NewYoutrack()
 
-	typeName := strings.ToLower(os.Args[1])
-	issue := os.Args[2]
-	duration := os.Args[3]
-	text := os.Args[4]
+	args := flag.Args()
+	typeName := strings.ToLower(args[0])
+	issue := args[1]
+	duration := args[2]
+	text := args[3]
 
 	types, err := yt.WorkItemTypes()
 	app.ExitOnError(err)
