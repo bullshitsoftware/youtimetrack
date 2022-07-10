@@ -3,26 +3,35 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/bullshitsoftware/youtimetrack/internal/app"
 )
 
+type App interface {
+	Load()
+	NewCalendar() app.Calendar
+	NewYoutrack() app.Youtrack
+}
+
+var (
+	a   App       = &app.App{}
+	now time.Time = time.Now()
+)
+
 func main() {
-	a := app.Default()
-	err := a.ReadConfig()
-	app.ExitOnError(err)
+	a.Load()
 
-	now := time.Now()
-	period := a.Calendar.Period(now)
-	fs := flag.NewFlagSet("details", flag.ExitOnError)
-	fs.Func("start", "start date (2006-01-02)", period.ParseStart)
-	fs.Func("end", "end date (2006-01-02)", period.ParseEnd)
-	fs.Parse(os.Args)
+	cal := a.NewCalendar()
+	yt := a.NewYoutrack()
 
-	items, err := a.Youtrack.WorkItems(period.Start, period.End)
+	period := cal.Period(now)
+	flag.Func("start", "start date (2006-01-02)", period.ParseStart)
+	flag.Func("end", "end date (2006-01-02)", period.ParseEnd)
+	flag.Parse()
+
+	items, err := yt.WorkItems(period.Start, period.End)
 	app.ExitOnError(err)
 	for _, i := range items {
 		date := time.Unix(i.Date/1000, 0)

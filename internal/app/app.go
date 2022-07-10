@@ -1,8 +1,6 @@
 package app
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 	"time"
@@ -20,82 +18,62 @@ func init() {
 }
 
 type App struct {
-	Youtrack yt.Client    `json:"youtrack"`
-	Calendar cal.Calendar `json:"calendar"`
+	cfg Config
 }
 
-func Default() *App {
-	return &App{
-		yt.Client{
-			BaseUrl: "http://localhost:2378/api",
-			Token:   "your-token",
-			Author:  "your-user-uuid",
-		},
-		cal.Calendar{
-			DayDur:    8 * 60,
-			SDayDur:   7 * 60,
-			Weekends:  []time.Weekday{time.Saturday, time.Sunday},
-			Workdays:  []string{"2022-02-05"},
-			SWorkdays: []string{"2022-02-21"},
-			Holidays:  []string{"2022-02-22"},
-		},
-	}
+type Calendar interface {
+	Period(now time.Time) *cal.Period
+	Calc(start, end time.Time) int
 }
 
-func (a *App) SaveConfig() (string, error) {
+type Youtrack interface {
+	WorkItems(start, end time.Time) ([]yt.WorkItem, error)
+	WorkItemTypes() ([]yt.Type, error)
+	Add(itemType yt.Type, issueId, duration, text string) error
+}
+
+func (a *App) Load() {
+	f, err := os.Open(path.Join(home, config))
+	ExitOnError(err)
+	defer f.Close()
+
+	err = a.cfg.LoadJson(f)
+	ExitOnError(err)
+}
+
+func (a *App) Save() string {
 	err := os.MkdirAll(home, 0700)
-	if err != nil {
-		return "", err
-	}
+	ExitOnError(err)
 
 	p := path.Join(home, config)
 	f, err := os.Create(p)
-	if err != nil {
-		return "", err
-	}
+	ExitOnError(err)
 	defer f.Close()
 
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	err = enc.Encode(a)
-	if err != nil {
-		return "", err
-	}
+	err = a.cfg.SaveJson(f)
+	ExitOnError(err)
 
-	return p, nil
+	return p
 }
 
-func (a *App) ReadConfig() error {
-	f, err := os.Open(path.Join(home, config))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
+func (a *App) NewCalendar() Calendar {
+	c := a.cfg.Calendar
+	return &cal.Calendar{
+		DayDur:  c.DayDur,
+		SDayDur: c.SDayDur,
 
-	err = json.NewDecoder(f).Decode(a)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func ExitOnError(err error) {
-	if err != nil {
-		printError(err)
-		os.Exit(1)
+		Weekends:  c.Weekends,
+		Workdays:  c.Workdays,
+		SWorkdays: c.SWorkdays,
+		Holidays:  c.Holidays,
 	}
 }
 
-func printError(err error) {
-	fmt.Println("Error:", err)
-}
-
-func FormatMinutes(m int) string {
-	s := fmt.Sprintf("%dh", m/60)
-	if m%60 > 0 {
-		s += fmt.Sprintf("%dm", m%60)
+func (a *App) NewYoutrack() Youtrack {
+	c := a.cfg.Youtrack
+	return &yt.Client{
+		BaseUrl: c.BaseUrl,
+		Token:   c.Token,
+		Author:  c.Author,
 	}
-
-	return s
 }

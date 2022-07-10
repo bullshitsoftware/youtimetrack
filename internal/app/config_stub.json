@@ -1,0 +1,24 @@
+{
+  "youtrack": {
+    "base_url": "https://localhost/api",
+    "token": "token",
+    "author": "author_id"
+  },
+  "calendar": {
+    "day_dur": 480,
+    "short_day_dur": 420,
+    "weekends": [
+      0,
+      6
+    ],
+    "workdays": [
+      "2022-01-01"
+    ],
+    "short_workdays": [
+      "2022-01-02"
+    ],
+    "holidays": [
+      "2022-01-03"
+    ]
+  }
+}

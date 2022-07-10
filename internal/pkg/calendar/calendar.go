@@ -6,10 +6,10 @@ type Calendar struct {
 	DayDur  int `json:"day_dur"`
 	SDayDur int `json:"short_day_dur"`
 
-	Weekends  []time.Weekday `json:"weekends"`
-	Workdays  []string       `json:"workdays"`
-	SWorkdays []string       `json:"short_workdays"`
-	Holidays  []string       `json:"holidays"`
+	Weekends  []time.Weekday
+	Workdays  []string
+	SWorkdays []string
+	Holidays  []string
 }
 
 type Period struct {

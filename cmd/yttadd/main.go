@@ -1,36 +1,55 @@
 package main
 
 import (
-	"errors"
+	"flag"
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/bullshitsoftware/youtimetrack/internal/app"
-	yt "github.com/bullshitsoftware/youtimetrack/internal/pkg/youtrack"
 )
 
+type App interface {
+	Load()
+	NewYoutrack() app.Youtrack
+}
+
+var a App = &app.App{}
+
 func main() {
-	if len(os.Args) != 4 {
-		app.ExitOnError(errors.New("invalid arguments number"))
+	flag.Usage = func() {
+		fmt.Printf("Usage of %s type issue duration comment:\n", os.Args[0])
+		fmt.Println("  - type, work type prefix (e.g., develop)")
+		fmt.Println("  - issue, issue number (e.g., XY-123)")
+		fmt.Println("  - duration, spent time in YouTrack format (e.g., 1h 30m)")
+		fmt.Println("  - comment, work item description (e.g., did something cool)")
+	}
+	flag.Parse()
+	if flag.NArg() != 4 {
+		flag.Usage()
+		return
 	}
 
-	a := app.Default()
-	err := a.ReadConfig()
+	a.Load()
+	yt := a.NewYoutrack()
+
+	typeName := strings.ToLower(os.Args[1])
+	issue := os.Args[2]
+	duration := os.Args[3]
+	text := os.Args[4]
+
+	types, err := yt.WorkItemTypes()
 	app.ExitOnError(err)
-	typeName := strings.ToLower(os.Args[0])
-	types, err := a.Youtrack.WorkItemTypes()
-	app.ExitOnError(err)
-	var t yt.Type
+	aTypes := []string{}
 	for _, i := range types {
 		s := strings.ToLower(i.Name)
 		if strings.HasPrefix(s, typeName) {
-			t = i
-			break
+			err = yt.Add(i, issue, duration, text)
+			app.ExitOnError(err)
+			fmt.Println("Time tracked")
+			return
 		}
+		aTypes = append(aTypes, i.Name)
 	}
-	issue := os.Args[1]
-	duration := os.Args[2]
-	text := os.Args[3]
-
-	a.Youtrack.Add(t, issue, duration, text)
+	fmt.Println("No work type found, available:", strings.Join(aTypes, ", "))
 }

@@ -6,9 +6,13 @@ import (
 	"github.com/bullshitsoftware/youtimetrack/internal/app"
 )
 
+type App interface {
+	Save() string
+}
+
+var a App = &app.App{}
+
 func main() {
-	a := app.Default()
-	p, err := a.SaveConfig()
-	app.ExitOnError(err)
+	p := a.Save()
 	fmt.Println("Created", p, "edit it with your favorite text editor")
 }

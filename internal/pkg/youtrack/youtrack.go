@@ -11,9 +11,9 @@ import (
 )
 
 type Client struct {
-	BaseUrl string `json:"base_url"`
-	Token   string `json:"token"`
-	Author  string `json:"author"`
+	BaseUrl string
+	Token   string
+	Author  string
 }
 
 type UnexpectedResponseError struct {
