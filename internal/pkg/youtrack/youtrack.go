@@ -119,6 +119,10 @@ func (c *Client) Add(itemType Type, issueId, duration, text string) error {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return NewUnexpectedResponseError(resp)
+	}
+
 	return nil
 }
 

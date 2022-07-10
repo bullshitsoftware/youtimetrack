@@ -186,6 +186,14 @@ func TestClient_Add(t *testing.T) {
 	err = c.Add(Type{Id: "1"}, "XY-123", "1h", "text")
 	assert.NoError(err)
 
+	ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusCreated)
+	})
+	err = c.Add(Type{Id: "1"}, "XY-123", "1h", "text")
+	assert.Error(err)
+	assert.IsType(&UnexpectedResponseError{}, err)
+	assert.Equal("", string(err.(*UnexpectedResponseError).Body))
+
 	c.BaseUrl = "ptth://localhost"
 	err = c.Add(Type{Id: "1"}, "XY-123", "1h", "text")
 	assert.Error(err)
