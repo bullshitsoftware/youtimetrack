@@ -57,6 +57,10 @@ func (yt *YoutrackStub) Add(itemType youtrack.Type, issueId, duration, text stri
 	return nil
 }
 
+func (yt *YoutrackStub) Delete(issueId, itemId string) error {
+	panic("unexpected call")
+}
+
 func Example() {
 	a = &AppStub{}
 

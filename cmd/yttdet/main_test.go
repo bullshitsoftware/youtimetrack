@@ -69,6 +69,10 @@ func (yt *YoutrackStub) Add(itemType youtrack.Type, issueId, duration, text stri
 	panic("unexpected call")
 }
 
+func (yt *YoutrackStub) Delete(issueId, itemId string) error {
+	panic("unexpected call")
+}
+
 func Example() {
 	a = &AppStub{}
 	now = time.Date(2007, 1, 2, 3, 4, 5, 0, time.UTC)

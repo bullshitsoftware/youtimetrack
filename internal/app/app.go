@@ -30,6 +30,7 @@ type Youtrack interface {
 	WorkItems(start, end time.Time) ([]yt.WorkItem, error)
 	WorkItemTypes() ([]yt.Type, error)
 	Add(itemType yt.Type, issueId, duration, text string) error
+	Delete(issueId, itemId string) error
 }
 
 func (a *App) Load() {

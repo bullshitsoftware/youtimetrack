@@ -10,6 +10,11 @@ builds:
     main: ./cmd/yttconf
     goos: [linux, darwin, windows]
     goarch: [amd64, arm, arm64]
+  - id: yttdel
+    binary: yttdel
+    main: ./cmd/yttdel
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm, arm64]
   - id: yttdet
     binary: yttdet
     main: ./cmd/yttdet

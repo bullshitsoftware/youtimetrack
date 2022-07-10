@@ -122,6 +122,20 @@ func (c *Client) Add(itemType Type, issueId, duration, text string) error {
 	return nil
 }
 
+func (c *Client) Delete(issueId, itemId string) error {
+	resp, err := c.request(http.MethodDelete, "/issues/"+issueId+"/timeTracking/workItems/"+itemId, nil, nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return NewUnexpectedResponseError(resp)
+	}
+
+	return nil
+}
+
 func (c *Client) request(method, path string, values url.Values, body io.Reader) (*http.Response, error) {
 	u, err := url.Parse(c.BaseUrl + path)
 	if err != nil {

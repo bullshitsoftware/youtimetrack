@@ -192,6 +192,37 @@ func TestClient_Add(t *testing.T) {
 	assert.ErrorContains(err, "unsupported protocol scheme")
 }
 
+func TestClient_Delete(t *testing.T) {
+	assert := assert.New(t)
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(http.MethodDelete, r.Method)
+		assert.Equal("/issues/XY-123/timeTracking/workItems/321", r.URL.Path)
+	}))
+	defer ts.Close()
+
+	c := Client{
+		BaseUrl: ts.URL,
+		Token:   "token",
+		Author:  "id",
+	}
+	var err error
+	err = c.Delete("XY-123", "321")
+	assert.NoError(err)
+
+	ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusCreated)
+	})
+	err = c.Delete("XY-123", "321")
+	assert.Error(err)
+	assert.IsType(&UnexpectedResponseError{}, err)
+	assert.Equal("", string(err.(*UnexpectedResponseError).Body))
+
+	c.BaseUrl = "ptth://localhost"
+	err = c.Delete("XY-123", "321")
+	assert.Error(err)
+	assert.ErrorContains(err, "unsupported protocol scheme")
+}
+
 func TestClient_request(t *testing.T) {
 	assert := assert.New(t)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

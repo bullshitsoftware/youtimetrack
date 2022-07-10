@@ -29,6 +29,10 @@ func (s *AppStub) NewYoutrack() app.Youtrack {
 	return &YoutrackStub{}
 }
 
+func (yt *YoutrackStub) Delete(issueId, itemId string) error {
+	panic("unexpected call")
+}
+
 type CalendarStub struct{}
 
 func (s *CalendarStub) Period(now time.Time) *calendar.Period {
