@@ -28,8 +28,8 @@ func main() {
 	yt := a.NewYoutrack()
 
 	period := cal.Period(now)
-	flag.Func("start", "start date (2006-01-02)", period.ParseStart)
-	flag.Func("end", "end date (2006-01-02)", period.ParseEnd)
+	flag.Func("start", "start date (2006-01-02), default to current month start", period.ParseStart)
+	flag.Func("end", "end date (2006-01-02), default to current month end", period.ParseEnd)
 	flag.Parse()
 
 	items, err := yt.WorkItems(period.Start, period.End)
