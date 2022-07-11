@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"os"
 	"path"
 	"time"
@@ -38,7 +39,7 @@ func (a *App) Load() {
 	ExitOnError(err)
 	defer f.Close()
 
-	err = a.cfg.LoadJson(f)
+	err = json.NewDecoder(f).Decode(&a.cfg)
 	ExitOnError(err)
 }
 
@@ -51,7 +52,9 @@ func (a *App) Save() string {
 	ExitOnError(err)
 	defer f.Close()
 
-	err = a.cfg.SaveJson(f)
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	err = enc.Encode(&a.cfg)
 	ExitOnError(err)
 
 	return p
