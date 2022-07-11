@@ -7,10 +7,12 @@ import (
 	yt "github.com/bullshitsoftware/youtimetrack/internal/pkg/youtrack"
 )
 
+var exit = os.Exit
+
 func ExitOnError(err error) {
 	if err != nil {
 		PrintError(err)
-		os.Exit(1)
+		exit(1)
 	}
 }
 

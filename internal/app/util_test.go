@@ -9,7 +9,20 @@ import (
 )
 
 func TestExitOnError(t *testing.T) {
+	pExit := exit
+
+	c := 0
+	assert := assert.New(t)
+	exit = func(code int) {
+		c++
+		assert.Equal(1, code)
+	}
 	ExitOnError(nil)
+	assert.Equal(0, c)
+	ExitOnError(errors.New("test"))
+	assert.Equal(1, c)
+
+	exit = pExit
 }
 
 func ExamplePrintError() {
