@@ -172,7 +172,7 @@ func TestClient_Add(t *testing.T) {
 		err := json.NewDecoder(r.Body).Decode(&item)
 		assert.NoError(err)
 		assert.Equal("1", item.Type.Id)
-		assert.Equal("1h", item.Duration.Presentation)
+		assert.Equal("2h", item.Duration.Presentation)
 		assert.Equal("text", item.Text)
 	}))
 	defer ts.Close()
@@ -183,7 +183,7 @@ func TestClient_Add(t *testing.T) {
 		Author:  "id",
 	}
 	var err error
-	err = c.Add(Type{Id: "1"}, "XY-123", "1h", "text")
+	err = c.Add(Type{Id: "1"}, "XY-123", "2h", "text")
 	assert.NoError(err)
 
 	ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -109,7 +109,7 @@ func (c *Client) WorkItemTypes() ([]Type, error) {
 func (c *Client) Add(itemType Type, issueId, duration, text string) error {
 	body := WorkItem{
 		Type:     itemType,
-		Duration: Duration{Presentation: "1h"},
+		Duration: Duration{Presentation: duration},
 		Text:     text,
 	}
 	b, _ := json.Marshal(body)
